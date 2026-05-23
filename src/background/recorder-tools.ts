@@ -15,7 +15,6 @@ import {
   recorderState,
   startRecording,
   stopRecording,
-  registerStartWaiter,
   registerStopWaiter
 } from "./recorder"
 import type { RecorderSource, RecordingMetadata } from "../types"
@@ -45,36 +44,12 @@ async function recorder_start(args: any): Promise<ToolResult> {
   }
   const tabId = typeof args?.tabId === "number" ? args.tabId : undefined
 
-  // Subscribe BEFORE startRecording so we can't miss a fast RECORDER_STARTED.
-  let unregister: (() => void) | null = null
-  let timer: ReturnType<typeof setTimeout> | undefined
-  const startedP = new Promise<string>((resolve, reject) => {
-    timer = setTimeout(() => {
-      unregister?.()
-      reject(new Error("timeout waiting for RECORDER_STARTED"))
-    }, RECORDER_TOOL_TIMEOUT_MS)
-    unregister = registerStartWaiter((id) => {
-      if (timer) clearTimeout(timer)
-      resolve(id)
-    })
-  })
-
   const startResult = await startRecording({ source, tabId })
   if (!startResult.ok) {
-    unregister?.()
-    if (timer) clearTimeout(timer)
-    // Swallow the now-unhandled timeout rejection so it doesn't surface as
-    // an unhandledrejection later in the SW.
-    startedP.catch(() => {})
     return toolErr(startResult.error || "failed to start recording")
   }
 
-  try {
-    const recordingId = await startedP
-    return okJson({ recordingId })
-  } catch (e) {
-    return toolErr((e as Error).message)
-  }
+  return okJson({ recordingId: startResult.id })
 }
 
 async function recorder_stop(_args: any): Promise<ToolResult> {

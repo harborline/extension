@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import "./style.css"
 import { companyNameForDomain } from "./lib/company-names"
+import { chooseDesktopMediaStream } from "./lib/desktop-capture"
 
 interface RecordingState {
   active: boolean
@@ -88,14 +89,54 @@ function Popup() {
   }
 
   const startRecording = async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-    if (!tab?.id) return
-    chrome.runtime.sendMessage(
-      { type: "START_RECORDING", tabId: tab.id },
-      () => {
-        window.close()
-      }
-    )
+    try {
+      const selected = await chooseDesktopMediaStream()
+      chrome.runtime.sendMessage(
+        {
+          type: "START_RECORDING",
+          source: "screen",
+          streamId: selected.streamId,
+          desktopAudio: selected.desktopAudio
+        },
+        (response) => {
+          if (response?.ok === false) {
+            setState((s) =>
+              s
+                ? { ...s, lastError: response.error || "Start failed" }
+                : {
+                    active: false,
+                    paused: false,
+                    source: null,
+                    tabId: null,
+                    startedAt: null,
+                    elapsedMs: 0,
+                    lastResumedAt: null,
+                    lastSaved: null,
+                    lastError: response.error || "Start failed"
+                  }
+            )
+            return
+          }
+          window.close()
+        }
+      )
+    } catch (err) {
+      setState((s) =>
+        s
+          ? { ...s, lastError: (err as Error).message || "Start failed" }
+          : {
+              active: false,
+              paused: false,
+              source: null,
+              tabId: null,
+              startedAt: null,
+              elapsedMs: 0,
+              lastResumedAt: null,
+              lastSaved: null,
+              lastError: (err as Error).message || "Start failed"
+            }
+      )
+    }
   }
 
   const stopRecording = () => {
@@ -241,7 +282,7 @@ function Popup() {
         onClick={startRecording}
         className="w-full text-xs py-2 px-4 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
       >
-        Record Tab
+        Record
       </button>
       {state?.lastSaved && (
         <div className="text-[10px] text-fg/40 mt-3 leading-tight">

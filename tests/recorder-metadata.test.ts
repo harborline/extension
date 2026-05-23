@@ -16,12 +16,14 @@ import {
 } from "../native-host/recorder-mirror.mjs"
 import {
   handleMirrorMessage,
+  handleRecorderError,
   getRecordingElapsedMs,
   notifyRecorderStarted,
   notifyRecorderFinalized,
   registerStartWaiter,
   registerStopWaiter,
-  recorderState
+  recorderState,
+  startRecording
 } from "../src/background/recorder"
 import { chooseRecorderMimeType, streamBlobToMirror } from "../src/tabs/offscreen"
 
@@ -324,6 +326,141 @@ describe("handleRecorderStopped — no SW-side base64 buffering", () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+})
+
+describe("startRecording — preselected desktop stream", () => {
+  beforeEach(() => {
+    recorderState.active = false
+    recorderState.paused = false
+    recorderState.source = null
+    recorderState.startedAt = null
+    recorderState.elapsedMs = 0
+    recorderState.lastResumedAt = null
+    recorderState.tabId = null
+    recorderState.originUrl = null
+    recorderState.lastSaved = null
+    recorderState.lastError = null
+
+    const c: any = (globalThis as any).chrome
+    c.runtime = {
+      ...(c.runtime || {}),
+      getContexts: async () => [],
+      getURL: (s: string) => s,
+      sendMessage: vi.fn().mockResolvedValue(undefined)
+    }
+    c.offscreen = { createDocument: vi.fn().mockResolvedValue(undefined) }
+    c.action = {
+      setBadgeText: vi.fn(),
+      setBadgeBackgroundColor: vi.fn(),
+      setTitle: vi.fn(),
+      setPopup: vi.fn()
+    }
+
+    handleRecorderError("reset")
+    recorderState.lastError = null
+  })
+
+  it("uses a UI-selected desktop stream id without reopening the picker", async () => {
+    const chooseDesktopMedia = vi.fn((_sources, callback) => {
+      callback("", {})
+    })
+    ;((globalThis as any).chrome as any).desktopCapture = {
+      chooseDesktopMedia
+    }
+
+    const startPromise = startRecording({
+      source: "screen",
+      streamId: "desktop-stream-from-ui",
+      desktopAudio: true
+    })
+
+    const sendMessage = ((globalThis as any).chrome as any).runtime.sendMessage
+    await vi.waitFor(() => {
+      expect(
+        sendMessage.mock.calls.some(
+          ([message]: [{ type?: string }]) => message?.type === "RECORDER_START"
+        )
+      ).toBe(true)
+    })
+    const startMessage = sendMessage.mock.calls.find(
+      ([message]: [{ type?: string }]) => message?.type === "RECORDER_START"
+    )?.[0]
+    notifyRecorderStarted(startMessage.id)
+
+    const result = await startPromise
+
+    expect(result.ok).toBe(true)
+    expect(chooseDesktopMedia).not.toHaveBeenCalled()
+    expect(sendMessage).toHaveBeenCalledWith({
+      type: "RECORDER_START",
+      id: result.id,
+      source: "screen",
+      streamId: "desktop-stream-from-ui",
+      desktopAudio: true
+    })
+
+    handleRecorderError("reset")
+  })
+
+  it("waits for the offscreen recorder to confirm it actually started", async () => {
+    const startPromise = startRecording({
+      source: "screen",
+      streamId: "desktop-stream-from-ui",
+      desktopAudio: false
+    })
+    const observer = vi.fn()
+    startPromise.then(observer)
+
+    const sendMessage = ((globalThis as any).chrome as any).runtime.sendMessage
+    await vi.waitFor(() => {
+      expect(
+        sendMessage.mock.calls.some(
+          ([message]: [{ type?: string }]) => message?.type === "RECORDER_START"
+        )
+      ).toBe(true)
+    })
+    await Promise.resolve()
+
+    expect(observer).not.toHaveBeenCalled()
+
+    const startMessage = sendMessage.mock.calls.find(
+      ([message]: [{ type?: string }]) => message?.type === "RECORDER_START"
+    )?.[0]
+    expect(startMessage?.id).toEqual(expect.any(String))
+
+    notifyRecorderStarted(startMessage.id)
+
+    await expect(startPromise).resolves.toEqual({
+      ok: true,
+      id: startMessage.id
+    })
+
+    handleRecorderError("reset")
+  })
+
+  it("returns the offscreen startup error when recording fails before start", async () => {
+    const startPromise = startRecording({
+      source: "screen",
+      streamId: "desktop-stream-from-ui",
+      desktopAudio: false
+    })
+
+    const sendMessage = ((globalThis as any).chrome as any).runtime.sendMessage
+    await vi.waitFor(() => {
+      expect(
+        sendMessage.mock.calls.some(
+          ([message]: [{ type?: string }]) => message?.type === "RECORDER_START"
+        )
+      ).toBe(true)
+    })
+
+    handleRecorderError("MP4/MOV recording is not supported by this browser")
+
+    await expect(startPromise).resolves.toEqual({
+      ok: false,
+      error: "MP4/MOV recording is not supported by this browser"
+    })
   })
 })
 

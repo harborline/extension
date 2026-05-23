@@ -4,6 +4,7 @@ import {
   type RecorderSource,
   type RecordingMetadata,
 } from "../../types";
+import { chooseDesktopMediaStream } from "../../lib/desktop-capture";
 
 interface RecState {
   active: boolean;
@@ -78,15 +79,32 @@ export function RecorderSection() {
     return () => clearInterval(i);
   }, [state.active, state.paused]);
 
-  const handleStart = () => {
-    chrome.runtime.sendMessage(
-      { type: "START_RECORDING", source: "screen" },
-      (res: { ok: boolean; error?: string }) => {
-        if (!res?.ok) {
-          setState((s) => ({ ...s, lastError: res?.error || "Start failed" }));
-        }
-      },
-    );
+  const handleStart = async () => {
+    setState((s) => ({ ...s, lastError: null }));
+    try {
+      const selected = await chooseDesktopMediaStream();
+      chrome.runtime.sendMessage(
+        {
+          type: "START_RECORDING",
+          source: "screen",
+          streamId: selected.streamId,
+          desktopAudio: selected.desktopAudio,
+        },
+        (res: { ok: boolean; error?: string }) => {
+          if (!res?.ok) {
+            setState((s) => ({
+              ...s,
+              lastError: res?.error || "Start failed",
+            }));
+          }
+        },
+      );
+    } catch (err) {
+      setState((s) => ({
+        ...s,
+        lastError: (err as Error).message || "Start failed",
+      }));
+    }
   };
 
   const handleStop = () => {

@@ -106,6 +106,24 @@ describe("new tab workspace apps", () => {
     ]);
   });
 
+  it("adds GitHub quick links for pull requests, repositories, and feed", () => {
+    const github = WORKSPACE_APPS.find((app) => app.name === "GitHub");
+    const source = readFileSync(join(process.cwd(), "src/newtab.tsx"), "utf8");
+    const styles = readFileSync(join(process.cwd(), "src/style.css"), "utf8");
+
+    expect(github?.quickLinks).toEqual([
+      { label: "Pull Requests", url: "https://github.com/pulls" },
+      {
+        label: "Repositories",
+        url: "https://github.com/aloewright?tab=repositories",
+      },
+      { label: "Feed", url: "https://github.com/dashboard-feed" },
+    ]);
+    expect(source).toContain("workspace-app-card__quick-links");
+    expect(source).toContain("app.quickLinks.map");
+    expect(styles).toContain(".workspace-app-card__quick-link");
+  });
+
   it("keeps the new tab layout grouped for search, cards, tabs, and history", () => {
     const source = readFileSync(join(process.cwd(), "src/newtab.tsx"), "utf8");
     const styles = readFileSync(join(process.cwd(), "src/style.css"), "utf8");

@@ -430,10 +430,8 @@ function AppCard({
     .join(" ");
 
   return (
-    <a
+    <div
       className={classes}
-      href={app.url}
-      aria-label={app.name}
       draggable
       onDragStart={(event) => {
         event.dataTransfer.effectAllowed = "move";
@@ -453,13 +451,32 @@ function AppCard({
       }}
       style={{ "--workspace-app-accent": app.accent } as CSSProperties}
     >
-      <span className="workspace-app-card__mark" aria-hidden="true">
-        <AppIcon name={app.icon} />
-      </span>
-      <span className="workspace-app-card__body">
-        <span className="workspace-app-card__name">{app.name}</span>
-      </span>
-    </a>
+      <a className="workspace-app-card__main" href={app.url}>
+        <span className="workspace-app-card__mark" aria-hidden="true">
+          <AppIcon name={app.icon} />
+        </span>
+        <span className="workspace-app-card__body">
+          <span className="workspace-app-card__name">{app.name}</span>
+        </span>
+      </a>
+      {app.quickLinks?.length ? (
+        <nav
+          className="workspace-app-card__quick-links"
+          aria-label={`${app.name} quick links`}
+        >
+          {app.quickLinks.map((link) => (
+            <a
+              key={link.url}
+              className="workspace-app-card__quick-link"
+              draggable={false}
+              href={link.url}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+      ) : null}
+    </div>
   );
 }
 

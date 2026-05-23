@@ -4,6 +4,12 @@ export interface WorkspaceApp {
   url: string;
   icon: WorkspaceAppIcon;
   accent: string;
+  quickLinks?: WorkspaceAppQuickLink[];
+}
+
+export interface WorkspaceAppQuickLink {
+  label: string;
+  url: string;
 }
 
 export type WorkspaceAppIcon =
@@ -49,6 +55,14 @@ export const WORKSPACE_APPS: WorkspaceApp[] = [
     url: "https://github.com",
     icon: "github",
     accent: "#c9d1d9",
+    quickLinks: [
+      { label: "Pull Requests", url: "https://github.com/pulls" },
+      {
+        label: "Repositories",
+        url: "https://github.com/aloewright?tab=repositories",
+      },
+      { label: "Feed", url: "https://github.com/dashboard-feed" },
+    ],
   },
   {
     name: "Linear",

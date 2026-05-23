@@ -320,7 +320,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.type === "START_RECORDING") {
     const source = (message.source || "tab") as RecorderSource;
-    startRecorderM6({ source, tabId: message.tabId }).then((result) => {
+    startRecorderM6({
+      source,
+      tabId: message.tabId,
+      streamId: message.streamId,
+      desktopAudio: message.desktopAudio,
+    }).then((result) => {
       broadcastRecordingState();
       sendResponse(result);
     });
