@@ -14,7 +14,7 @@
 const tabIdSchema = {
   type: "number",
   description:
-    "Target Brave tab id. Optional — defaults to the active tab in the last-focused window."
+    "Target browser tab id. Optional — defaults to the active tab in the last-focused window."
 }
 
 export const DOM_TOOL_DEFS = [

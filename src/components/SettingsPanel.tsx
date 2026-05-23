@@ -487,7 +487,7 @@ export function SettingsPanel({
           </div>
         </div>
 
-        {/* Captures (ALO-467) — destination for screenshot/full-page PDF saves */}
+        {/* Captures (ALO-467) — destination for screenshot saves */}
         <CapturesSection settings={settings} onUpdate={onUpdate} />
 
         {/* Sidebar UX (ALO-471) — Auto-PiP toggle plus future rail tweaks */}
@@ -590,7 +590,7 @@ function CapturesSection({
       </label>
       <div className="bg-card/20 rounded p-2 space-y-2">
         <div className="text-[10px] text-fg/50">
-          Where Screenshot visible area and full-page PDF saves go.
+          Where Screenshot visible area saves go.
         </div>
         <div className="grid grid-cols-3 gap-1.5">
           {locations.map((loc) => {

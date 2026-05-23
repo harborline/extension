@@ -334,7 +334,7 @@ export function TerminalSection({ active: sectionActive = true }: TerminalSectio
             ) : (
               <div className="text-fg/40 text-xs max-w-xs leading-relaxed">
                 Native host not connected. Run{" "}
-                <code className="font-mono text-fg/60">pnpm install-host</code> and reload Brave.
+                <code className="font-mono text-fg/60">pnpm install-host</code> and reload the browser.
               </div>
             )}
             <div className="text-[10px] text-fg/30 mt-2">⌘T new tab · ⌘W close · ⌘1–9 switch</div>

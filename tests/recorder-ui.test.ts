@@ -15,7 +15,7 @@ describe("recorder section UI", () => {
     expect(source).not.toContain("What do you want to record?");
   });
 
-  it("declares desktop capture for the Brave picker", () => {
+  it("declares desktop capture for the browser picker", () => {
     const packageJson = JSON.parse(
       readFileSync(join(process.cwd(), "package.json"), "utf8"),
     );

@@ -418,7 +418,7 @@ export class MCPServer {
     // toolRequestBridge that the host wires up. M4/M5 register more.
     const tabsList = {
       name: "tabs_list",
-      description: "List all open tabs in Brave with id, url, and title.",
+      description: "List all open browser tabs with id, url, and title.",
       inputSchema: { type: "object", properties: {} },
       handler: async (args) => this._bridge("tabs_list", args)
     }
