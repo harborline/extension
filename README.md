@@ -96,6 +96,9 @@ const QUICK_LINKS: { label: string; url: string; icon: ReactNode }[] = [
 After editing, run `pnpm dev` to hot-reload the unpacked extension or
 `pnpm build` to produce a fresh `build/` for packaging.
 
+Chrome Web Store submission copy, permission justifications, privacy text, and
+asset checklist live in [`docs/chrome-web-store-submission.md`](docs/chrome-web-store-submission.md).
+
 ### Customizing the Workspace App grid
 
 The larger tile grid below the Quick Links is sourced from the
