@@ -12,6 +12,7 @@ import {
   type WorkspaceApp,
   type WorkspaceAppIcon,
 } from "./newtab-apps";
+import { newTabDestinationForInput } from "./lib/newtab-navigation";
 
 const TOP_APP_COUNT = 3;
 const FOCUS_APP_COUNT = 4;
@@ -272,8 +273,9 @@ function BraveSearchForm() {
     const trimmed = query.trim();
     if (!trimmed) return;
 
+    const destination = newTabDestinationForInput(trimmed);
     window.location.assign(
-      `https://search.brave.com/search?q=${encodeURIComponent(trimmed)}`,
+      destination ?? `https://search.brave.com/search?q=${encodeURIComponent(trimmed)}`,
     );
   };
 
@@ -281,19 +283,19 @@ function BraveSearchForm() {
     <form className="newtab-search" role="search" onSubmit={search}>
       <SearchIcon className="newtab-search__icon" />
       <input
-        aria-label="Search Brave"
+        aria-label="Search or enter address"
         autoComplete="off"
         className="newtab-search__input"
         name="q"
         onChange={(event) => setQuery(event.currentTarget.value)}
-        placeholder="Search Brave"
+        placeholder="Search or enter address"
         type="search"
         value={query}
       />
       <button
         className="newtab-search__button"
         type="submit"
-        aria-label="Search Brave"
+        aria-label="Search or enter address"
       >
         <SearchIcon />
       </button>

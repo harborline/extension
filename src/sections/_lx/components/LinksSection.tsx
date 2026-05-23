@@ -42,14 +42,14 @@ export function LinksSection({ links, onAdd, onRemove, onUpdate, onClear, settin
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <div>
+    <div className="min-w-0 max-w-full overflow-x-hidden">
+      <div className="flex items-start justify-between gap-3 mb-4 flex-wrap min-w-0">
+        <div className="min-w-0">
           <h2 className="text-lg font-semibold">Collected Links</h2>
           <p className="text-xs text-fg/40 mt-0.5">{links.length} links saved</p>
         </div>
-        <div className="flex gap-2 items-center">
-          <label className="flex items-center gap-2 text-xs text-fg/50">
+        <div className="flex gap-2 items-center flex-wrap min-w-0">
+          <label className="flex items-center gap-2 text-xs text-fg/50 max-w-full">
             <input
               type="checkbox"
               checked={settings.notebookMode === "append"}
@@ -91,7 +91,7 @@ export function LinksSection({ links, onAdd, onRemove, onUpdate, onClear, settin
         </div>
       </div>
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4 min-w-0">
         <input
           type="text" value={urlInput} onChange={(e) => setUrlInput(e.target.value)}
           placeholder="Paste a URL to save..."
@@ -101,7 +101,7 @@ export function LinksSection({ links, onAdd, onRemove, onUpdate, onClear, settin
               setUrlInput("")
             }
           }}
-          className="flex-1 text-sm py-2 px-3 rounded bg-card border border-border text-fg placeholder-fg/30 outline-none focus:border-primary/50"
+          className="flex-1 min-w-0 text-sm py-2 px-3 rounded bg-card border border-border text-fg placeholder-fg/30 outline-none focus:border-primary/50"
         />
         <button onClick={addCurrentTab} className="text-xs py-2 px-3 rounded bg-accent hover:bg-accent/80 transition-colors whitespace-nowrap">
           + Current Tab
@@ -115,7 +115,7 @@ export function LinksSection({ links, onAdd, onRemove, onUpdate, onClear, settin
       />
 
       {allTags.length > 0 && (
-        <div className="flex gap-1 mb-3 flex-wrap">
+        <div className="flex gap-1 mb-3 flex-wrap min-w-0">
           <button
             onClick={() => setActiveTag(null)}
             className={`text-[11px] py-0.5 px-2 rounded transition-colors ${
@@ -127,7 +127,7 @@ export function LinksSection({ links, onAdd, onRemove, onUpdate, onClear, settin
             <button
               key={tag}
               onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-              className={`text-[11px] py-0.5 px-2 rounded transition-colors ${
+              className={`text-[11px] py-0.5 px-2 rounded transition-colors max-w-full break-all ${
                 activeTag === tag ? "bg-chart-1/20 text-chart-1" : "bg-accent/50 text-fg/40 hover:text-fg/60"
               }`}>
               {tag}
@@ -136,10 +136,10 @@ export function LinksSection({ links, onAdd, onRemove, onUpdate, onClear, settin
         </div>
       )}
 
-      <div className="grid gap-1">
+      <div className="grid gap-1 min-w-0 max-w-full">
         {filtered.map((link) => (
-          <div key={link.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-card/50 transition-colors group">
-            <div className="flex-1 min-w-0">
+          <div key={link.id} className="flex items-center gap-2 p-3 rounded-lg hover:bg-card/50 transition-colors group min-w-0 max-w-full overflow-hidden">
+            <div className="flex-1 min-w-0 max-w-full overflow-hidden">
               <a
                 href={link.url}
                 target="_blank"
@@ -149,11 +149,11 @@ export function LinksSection({ links, onAdd, onRemove, onUpdate, onClear, settin
               >
                 {link.title}
               </a>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                <span className="text-[10px] text-fg/30 truncate max-w-[200px]">{link.url}</span>
+              <div className="flex items-center gap-2 mt-1 flex-wrap min-w-0 max-w-full overflow-hidden">
+                <span className="text-[10px] text-fg/30 truncate min-w-0 max-w-full">{link.url}</span>
                 {link.tags.map((t) => (
-                  <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-accent text-fg/50 group/tag inline-flex items-center gap-1">
-                    {t}
+                  <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-accent text-fg/50 group/tag inline-flex items-center gap-1 max-w-full">
+                    <span className="truncate min-w-0 max-w-[8rem]">{t}</span>
                     <button
                       onClick={() => onUpdate(link.id, { tags: link.tags.filter((tag) => tag !== t) })}
                       className="text-fg/20 hover:text-destructive opacity-0 group-hover/tag:opacity-100 transition-opacity">

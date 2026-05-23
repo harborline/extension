@@ -40,6 +40,7 @@ import {
   handleThirdPartyCookieMessage,
   isThirdPartyCookieMessage,
 } from "./background/third-party-cookies";
+import { normalizeConsoleEntries } from "./lib/console-errors";
 import type {
   PickerCapture,
   PickerMessage,
@@ -49,6 +50,7 @@ import type {
 
 const HOST_NAME = "com.aidev.sidebar";
 const HEARTBEAT_ALARM = "native-heartbeat";
+const STALE_DYNAMIC_CONTENT_SCRIPT_IDS = ["srcContentsPageConsoleBridge"];
 let nativePort: chrome.runtime.Port | null = null;
 let lastDisconnectAt = 0;
 const pendingCallbacks = new Map<string, (msg: any) => void>();
@@ -67,6 +69,14 @@ void ensureThirdPartyCookieRules().catch((err) => {
 void ensureBookmarkSnapshot().catch((err) => {
   safeRuntimeWarning("failed to initialize bookmark snapshot", err);
 });
+
+function unregisterStaleDynamicContentScripts() {
+  void chrome.scripting
+    ?.unregisterContentScripts?.({ ids: STALE_DYNAMIC_CONTENT_SCRIPT_IDS })
+    .catch(() => undefined);
+}
+
+unregisterStaleDynamicContentScripts();
 
 chrome.runtime.onMessageExternal?.addListener(
   (_message, _sender, sendResponse) => {
@@ -277,15 +287,31 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === "GET_CONSOLE_ERRORS") {
-    sendResponse({ errors: consoleErrors.get(message.tabId) || [] });
+    if (typeof message.tabId !== "number") {
+      sendResponse({ errors: [] });
+      return;
+    }
+    const errors = normalizeConsoleEntries(consoleErrors.get(message.tabId));
+    consoleErrors.set(message.tabId, errors);
+    sendResponse({ errors });
   }
 
   if (message.type === "PAGE_ERRORS") {
-    // Content script reports console errors
-    const existing = consoleErrors.get(sender.tab?.id || 0) || [];
+    // Content script reports console errors. Normalize again here so older
+    // builds or unexpected payloads cannot poison the inspector console.
+    const incoming = normalizeConsoleEntries(message.errors);
+    if (incoming.length === 0) {
+      sendResponse({ ok: true });
+      return;
+    }
+    if (typeof sender.tab?.id !== "number") {
+      sendResponse({ ok: true });
+      return;
+    }
+    const existing = normalizeConsoleEntries(consoleErrors.get(sender.tab.id));
     consoleErrors.set(
-      sender.tab?.id || 0,
-      [...existing, ...message.errors].slice(-100),
+      sender.tab.id,
+      [...existing, ...incoming].slice(-100),
     );
     sendResponse({ ok: true });
   }
@@ -675,12 +701,16 @@ async function finalizeCapture(tabId: number, capture: PickerCapture) {
 
 // Auto-cancel picker if the user navigates the tab away.
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.status === "loading") {
+    consoleErrors.delete(tabId);
+  }
   if (changeInfo.status === "loading" && pendingPickers.has(tabId)) {
     rejectPending(tabId, "navigation");
   }
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
+  consoleErrors.delete(tabId);
   rejectPending(tabId, "tab-closed");
 });
 
@@ -730,6 +760,7 @@ chrome.runtime.onStartup.addListener(clearActionPopup);
 // Context menu for scraping
 chrome.runtime.onInstalled.addListener(() => {
   clearActionPopup();
+  unregisterStaleDynamicContentScripts();
   void ensureThirdPartyCookieRules().catch((err) => {
     safeRuntimeWarning("failed to refresh third-party cookie rules", err);
   });

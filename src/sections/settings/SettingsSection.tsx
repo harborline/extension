@@ -56,6 +56,15 @@ export function SettingsSection() {
         return
       }
       switch (msg.type) {
+        case "doppler.login.started":
+          if (!msg.silent) {
+            showToast(
+              msg.codeCopiedToClipboard
+                ? "Doppler opened. Paste the clipboard code into Brave if prompted."
+                : "Doppler opened in Brave."
+            )
+          }
+          break
         case "doppler.login":
           if (!msg.silent) showToast("Doppler login complete.")
           nativeHost.dopplerStatus()

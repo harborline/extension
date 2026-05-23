@@ -3,6 +3,7 @@ import {
   absoluteBlobUrl,
   CapturesClientError,
   deleteCapture,
+  fetchCaptureBlob,
   listCaptures,
   searchCaptures
 } from "../src/lib/captures-client"
@@ -117,6 +118,21 @@ describe("captures-client (ALO-468)", () => {
     await deleteCapture({ ...cfg(), fetchImpl: f }, "01HX")
     expect(observed!.method).toBe("DELETE")
     expect(observed!.url).toContain("/api/captures/01HX")
+  })
+
+  it("fetchCaptureBlob fetches relative blob URLs with the sidebar token header", async () => {
+    let observed: Request | null = null
+    const f = makeFetch(async (req) => {
+      observed = req
+      return new Response("png", { headers: { "content-type": "image/png" } })
+    })
+
+    const blob = await fetchCaptureBlob({ ...cfg(), fetchImpl: f }, "/api/captures/01HX/blob")
+
+    expect(observed).not.toBeNull()
+    expect(observed!.url).toBe("https://sidebar.example/api/captures/01HX/blob")
+    expect(observed!.headers.get("X-Sidebar-Token")).toBe("tk")
+    expect(blob.type).toBe("image/png")
   })
 
   it("absoluteBlobUrl rewrites relative paths against apiUrl", () => {

@@ -630,6 +630,12 @@ async function main() {
 
       case "doppler.login": {
         try {
+          sendMessage({
+            type: "doppler.login.started",
+            ok: true,
+            scope: msg.scope || "/",
+            codeCopiedToClipboard: true
+          })
           const result = await mcp.dopplerLogin({
             scope: msg.scope || "/",
             overwrite: msg.overwrite !== false

@@ -20,6 +20,7 @@ interface UseNativeHostOptions {
     defaults?: { project: string; config: string; scope?: string }
     secrets?: Record<string, string>
     silent?: boolean
+    codeCopiedToClipboard?: boolean
   }) => void
   onPtyData?: (sessionId: string, data: string) => void
   onPtyExit?: (sessionId: string, exitCode: number, signal?: number) => void
@@ -109,6 +110,7 @@ export function useNativeHost(opts: UseNativeHostOptions = {}) {
           const { type: _t, ...status } = payload as any
           optsRef.current.onDopplerStatus?.(status as DopplerStatus)
         } else if (
+          ptype === "doppler.login.started" ||
           ptype === "doppler.login" ||
           ptype === "doppler.defaults.set" ||
           ptype === "doppler.secrets.download"

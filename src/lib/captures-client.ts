@@ -100,6 +100,15 @@ export async function deleteCapture(cfg: ClientConfig, id: string): Promise<void
   }
 }
 
+export async function fetchCaptureBlob(cfg: ClientConfig, blobUrl: string): Promise<Blob> {
+  const f = cfg.fetchImpl ?? fetch
+  const res = await f(absoluteBlobUrl(cfg, blobUrl), { headers: headers(cfg) })
+  if (!res.ok) {
+    throw new CapturesClientError(`blob fetch failed (${res.status})`, res.status)
+  }
+  return res.blob()
+}
+
 /**
  * The Worker returns relative blob URLs (e.g. /api/captures/<id>/blob).
  * Resolve them against the configured API host so the sidebar can open

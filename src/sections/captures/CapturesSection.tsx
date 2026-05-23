@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react"
 import { LeoButton } from "../../components/leo"
-import { openExternalLink } from "../../lib/open-url"
+import { openExternalLink, openExternalUrl } from "../../lib/open-url"
 import { getSettings } from "../../storage"
 import {
-  absoluteBlobUrl,
   CapturesClientError,
   deleteCapture,
+  fetchCaptureBlob,
   listCaptures,
   searchCaptures,
   type CaptureSearchHit,
@@ -29,6 +29,7 @@ export function CapturesSection() {
   const [searchResults, setSearchResults] = useState<CaptureSearchHit[] | null>(null)
   const [query, setQuery] = useState("")
   const [busy, setBusy] = useState(false)
+  const [openingId, setOpeningId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [config, setConfig] = useState<{ apiUrl: string; apiToken: string } | null>(null)
 
@@ -110,6 +111,28 @@ export function CapturesSection() {
     }
   }
 
+  const openCapture = async (item: CaptureSummary | CaptureSearchHit) => {
+    if (!config) return
+    setOpeningId(item.id)
+    setError(null)
+    try {
+      const blob = await fetchCaptureBlob(config, item.blobUrl)
+      const objectUrl = URL.createObjectURL(blob)
+      await openExternalUrl(objectUrl)
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000)
+    } catch (err) {
+      setError(
+        err instanceof CapturesClientError
+          ? `Failed to open capture (${err.status})`
+          : err instanceof Error
+            ? err.message
+            : String(err)
+      )
+    } finally {
+      setOpeningId(null)
+    }
+  }
+
   const visible = useMemo(() => {
     if (searchResults) return searchResults
     return items ?? []
@@ -162,7 +185,7 @@ export function CapturesSection() {
         )}
         {visible.map((item) => {
           const isSearch = "score" in item
-          const url = config ? absoluteBlobUrl(config, item.blobUrl) : item.blobUrl
+          const isOpening = openingId === item.id
           return (
             <div
               key={item.id}
@@ -173,16 +196,15 @@ export function CapturesSection() {
                 {item.kind}
               </div>
               <div className="flex min-w-0 flex-col">
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={openExternalLink(url)}
-                  className="truncate text-xs font-medium text-fg hover:text-primary"
+                <button
+                  type="button"
+                  onClick={() => void openCapture(item)}
+                  disabled={busy || isOpening || !config}
+                  className="truncate text-left text-xs font-medium text-fg hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
                   title={item.filename}
                 >
-                  {item.filename}
-                </a>
+                  {isOpening ? "Opening…" : item.filename}
+                </button>
                 {item.sourceTitle && (
                   <span className="truncate text-[10px] text-fg/50" title={item.sourceTitle}>
                     {item.sourceTitle}
