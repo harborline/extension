@@ -32,9 +32,9 @@ Built with [Plasmo](https://www.plasmo.com/) for Chrome and Chromium browsers.
 - **Bookmarks and history:** pull a local bookmark snapshot into the extension,
   browse bookmarks alphabetically, by favorites, or by category, and show recent
   history on the new tab page.
-- **New tab workspace:** default browser search, ordered app cards for Cloudflare, App
-  Store Connect, Email, daily planner, chat, blog editor, link shortener, and
-  compact utility links, plus open tabs and scrollable history panels.
+- **New tab workspace:** default browser search, ordered app cards for common
+  developer services, compact utility links, open tabs, and scrollable history
+  panels.
 - **Resource library:** save links, references, bookmarks, recordings, and PDFs
   as structured resources that can be searched locally or synced through the
   worker backend.

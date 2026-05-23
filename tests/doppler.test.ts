@@ -38,7 +38,7 @@ describe("DopplerClient", () => {
     })
     const fetchImpl = vi.fn(async () =>
       jsonResponse({
-        workplace: { name: "Aloes", slug: "aloes" },
+        workplace: { name: "Example Workspace", slug: "aloes" },
         type: "cli",
         token_preview: "dp.ct...abcd",
         name: "Laptop"
@@ -51,7 +51,7 @@ describe("DopplerClient", () => {
     expect(status.cliAvailable).toBe(true)
     expect(status.tokenSet).toBe(true)
     expect(status.tokenSource).toBe("cli")
-    expect(status.workplaceName).toBe("Aloes")
+    expect(status.workplaceName).toBe("Example Workspace")
     expect(JSON.stringify(status)).not.toContain("super-secret-token")
   })
 
@@ -91,7 +91,7 @@ describe("DopplerClient", () => {
       }
       return { code: 1, stdout: "", stderr: "unexpected" }
     })
-    const fetchImpl = vi.fn(async () => jsonResponse({ workplace: { name: "Aloes" } }))
+    const fetchImpl = vi.fn(async () => jsonResponse({ workplace: { name: "Example Workspace" } }))
     const client = new DopplerClient({ runCommand, fetchImpl, home: tmpHome() })
     client.setDefaults({ scope: "/Users/example" })
 
@@ -119,7 +119,7 @@ describe("DopplerClient", () => {
       }
       return { code: 1, stdout: "", stderr: "unexpected" }
     })
-    const fetchImpl = vi.fn(async () => jsonResponse({ workplace: { name: "Aloes" } }))
+    const fetchImpl = vi.fn(async () => jsonResponse({ workplace: { name: "Example Workspace" } }))
     const client = new DopplerClient({ runCommand, fetchImpl, home: tmpHome() })
 
     const status = await client.status()
