@@ -36,17 +36,54 @@ export function storeToken(token: string): void {
 
 export function TokenGate({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string>(() => readStoredToken())
+  const [mailSessionReady, setMailSessionReady] = useState(false)
+  const [checkingMailSession, setCheckingMailSession] = useState(() => !readStoredToken())
 
   const signOut = useCallback(() => {
     storeToken("")
     setToken("")
+    setMailSessionReady(false)
   }, [])
 
   const client = useMemo(() => createApiClient(token), [token])
 
   const value = useMemo<AuthContextValue>(() => ({ token, client, signOut }), [token, client, signOut])
 
-  if (!token) {
+  useEffect(() => {
+    if (token) {
+      setCheckingMailSession(false)
+      setMailSessionReady(false)
+      return
+    }
+
+    let cancelled = false
+    setCheckingMailSession(true)
+    createApiClient("")
+      .conversations.list({ limit: 1 })
+      .then(() => {
+        if (!cancelled) setMailSessionReady(true)
+      })
+      .catch(() => {
+        if (!cancelled) setMailSessionReady(false)
+      })
+      .finally(() => {
+        if (!cancelled) setCheckingMailSession(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [token])
+
+  if (!token && checkingMailSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 text-sm text-muted">
+        Checking your fly.pm session...
+      </div>
+    )
+  }
+
+  if (!token && !mailSessionReady) {
     return (
       <LoginForm
         onSubmit={(t) => {

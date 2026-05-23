@@ -32,6 +32,9 @@ bucket_name = "sidebar-blobs"
 [ai]
 binding = "AI"
 
+[vars]
+MAIL_APP_URL = "https://mail.fly.pm"
+
 # Durable ingest pipeline for recordings + PDFs.
 [[workflows]]
 binding = "INGEST"

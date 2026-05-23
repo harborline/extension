@@ -125,7 +125,10 @@ export function createApiClient(token: string, baseUrl = ""): ApiClient {
     const headers = new Headers(init.headers)
     if (token) headers.set("x-sidebar-token", token)
     if (init.body && !headers.has("content-type")) headers.set("content-type", "application/json")
-    const res = await fetch(`${baseUrl}${path}`, { ...init, headers })
+    const res = await fetch(
+      `${baseUrl}${path}`,
+      { ...init, headers, credentials: "include" } as RequestInit
+    )
     if (!res.ok) {
       const body = (await res.json().catch(() => null)) as { error?: { code?: string; message?: string } } | null
       const code = body?.error?.code ?? "http_error"

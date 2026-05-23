@@ -7,6 +7,7 @@ export interface Env {
   INGEST?: Workflow              // optional — code must work without it
   ASSETS?: Fetcher               // static SPA bundle; absent in plain-API tests
   SIDEBAR_TOKEN: string
+  MAIL_APP_URL?: string
 }
 
 // Workers AI model ids used by the Worker.
