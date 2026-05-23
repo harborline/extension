@@ -73,7 +73,7 @@ async function publishBookmarks(upsert: ResourceUpsert): Promise<void> {
       note = `bookmark tree trimmed to top 3 levels (full size ${originalSize}B)`
     }
     upsert(BOOKMARKS_URI, {
-      name: "Brave bookmarks",
+      name: "Browser bookmarks",
       description: note ?? "Full bookmark tree.",
       mimeType: "application/json",
       payload

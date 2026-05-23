@@ -10,6 +10,9 @@ describe("extension page privacy", () => {
 
     expect(packageJson.manifest.web_accessible_resources).toBeUndefined();
     expect(packageJson.manifest.externally_connectable).toBeUndefined();
+    expect(packageJson.author).toBeUndefined();
+    expect(packageJson.manifest.permissions).not.toContain("debugger");
+    expect(packageJson.manifest.permissions).not.toContain("tabGroups");
   });
 
   it("returns no extension data to external runtime callers", () => {

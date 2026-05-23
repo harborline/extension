@@ -11,7 +11,7 @@ export const LIBRARY_TOOL_DEFS = [
   {
     name: "bookmarks_search",
     description:
-      "Search Brave bookmarks by free-text query. Wraps chrome.bookmarks.search.",
+      "Search browser bookmarks by free-text query. Wraps chrome.bookmarks.search.",
     inputSchema: {
       type: "object",
       properties: {
