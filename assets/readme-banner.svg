@@ -1,6 +1,6 @@
 <svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">Brave Dev Extension</title>
-  <desc id="desc">Clean README banner for Brave Dev Extension.</desc>
+  <title id="title">AI Dev Sidebar</title>
+  <desc id="desc">Clean README banner for AI Dev Sidebar.</desc>
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1200" y2="360" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#17191f"/>
@@ -29,8 +29,8 @@
     <path d="M91 62L73 124" stroke="#f6c45f" stroke-width="10" stroke-linecap="round"/>
   </g>
 
-  <text x="390" y="151" fill="#f8fafc" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="58" font-weight="800" letter-spacing="0">Brave Dev Extension</text>
-  <text x="392" y="196" fill="#b7c0cf" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="23" font-weight="500" letter-spacing="0">Side panel tools for local AI, browser data, recording, and workflow launch</text>
+  <text x="390" y="151" fill="#f8fafc" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="58" font-weight="800" letter-spacing="0">AI Dev Sidebar</text>
+  <text x="392" y="196" fill="#b7c0cf" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="23" font-weight="500" letter-spacing="0">Chrome side panel tools for local AI, browser data, captures, and workflow launch</text>
 
   <g fill="#98a3b5" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="0">
     <text x="392" y="242">TERMINAL</text>

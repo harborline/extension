@@ -1,18 +1,17 @@
-![Brave Dev Extension](assets/readme-banner.svg)
+![AI Dev Sidebar](assets/readme-banner.svg)
 
-# Brave Dev Extension
+# AI Dev Sidebar
 
-[![Tests](https://github.com/aloewright/brave-extension/actions/workflows/test.yml/badge.svg)](https://github.com/aloewright/brave-extension/actions/workflows/test.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare%20Workers-F38020?logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
-[![Brave](https://img.shields.io/badge/Brave-FB542B?logo=brave&logoColor=white)](https://brave.com/)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/allosaurus)
+[![Chrome Extension](https://img.shields.io/badge/Chrome%20Extension-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/)
+[![Plasmo](https://img.shields.io/badge/Plasmo-1f2937)](https://www.plasmo.com/)
 
-Brave Dev Extension turns Brave's side panel and new tab page into a compact
+AI Dev Sidebar turns Chrome's side panel and new tab page into a compact
 developer console. It connects browser context to local AI CLI tools, page
 inspection, recording, bookmarks, history, cookies, and synced resource storage.
 
-Built with [Plasmo](https://www.plasmo.com/) for Brave and Chromium browsers.
+Built with [Plasmo](https://www.plasmo.com/) for Chrome and Chromium browsers.
 
 ## Extension Functionality
 
@@ -27,13 +26,13 @@ Built with [Plasmo](https://www.plasmo.com/) for Brave and Chromium browsers.
 - **Cookies and browser data:** inspect site-scoped cookies/cache, use compact
   expand/collapse controls, apply cookie actions, and manage third-party cookie
   prompts without exposing extension data to pages.
-- **Recorder:** start browser recording through Brave's native capture prompt,
+- **Recorder:** start browser recording through the browser capture prompt,
   pause/resume/stop recordings, keep recent recording metadata, and mirror
   completed clips for MCP access.
 - **Bookmarks and history:** pull a local bookmark snapshot into the extension,
   browse bookmarks alphabetically, by favorites, or by category, and show recent
   history on the new tab page.
-- **New tab workspace:** Brave Search, ordered app cards for Cloudflare, App
+- **New tab workspace:** default browser search, ordered app cards for Cloudflare, App
   Store Connect, Email, daily planner, chat, blog editor, link shortener, and
   compact utility links, plus open tabs and scrollable history panels.
 - **Resource library:** save links, references, bookmarks, recordings, and PDFs
@@ -46,7 +45,7 @@ Built with [Plasmo](https://www.plasmo.com/) for Brave and Chromium browsers.
 
 - **Extension UI:** React + TypeScript side panel, popup, content scripts, and
   new tab page packaged by Plasmo as a Manifest V3 extension.
-- **Native host:** a Node native-messaging host bridges Brave to local shells,
+- **Native host:** a Node native-messaging host bridges the browser to local shells,
   the MCP HTTP/SSE server, recorder mirrors, and local config files.
 - **Worker backend:** the optional `worker/` service stores conversations,
   links, bookmarks, recordings, PDFs, and vector search metadata using
@@ -59,7 +58,7 @@ Built with [Plasmo](https://www.plasmo.com/) for Brave and Chromium browsers.
 
 ![New tab screenshot](assets/newtab-screenshot.png)
 
-The extension replaces the new tab page with a Brave-style search bar, a row
+The extension replaces the new tab page with a default-search-aware search bar, a row
 of icon-only Quick Links (chat / email / calendar / tasks / link shortener),
 and a draggable grid of Workspace App tiles.
 

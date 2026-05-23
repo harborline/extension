@@ -72,6 +72,7 @@
       "tabs",
       "activeTab",
       "sidePanel",
+      "search",
       "nativeMessaging",
       "scripting",
       "contextMenus",

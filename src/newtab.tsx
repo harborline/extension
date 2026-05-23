@@ -265,7 +265,7 @@ function useBrowserShortcuts() {
   return { tabs, history, clearHistory };
 }
 
-function BraveSearchForm() {
+function DefaultSearchForm() {
   const [query, setQuery] = useState("");
 
   const search = (event: FormEvent<HTMLFormElement>) => {
@@ -274,8 +274,18 @@ function BraveSearchForm() {
     if (!trimmed) return;
 
     const destination = newTabDestinationForInput(trimmed);
+    if (destination) {
+      window.location.assign(destination);
+      return;
+    }
+
+    if (chrome.search?.query) {
+      void chrome.search.query({ text: trimmed, disposition: "CURRENT_TAB" });
+      return;
+    }
+
     window.location.assign(
-      destination ?? `https://search.brave.com/search?q=${encodeURIComponent(trimmed)}`,
+      `https://www.google.com/search?q=${encodeURIComponent(trimmed)}`,
     );
   };
 
@@ -718,7 +728,7 @@ function NewTabWorkspace() {
   return (
     <div className="newtab-workspace">
       <main className="newtab-workspace__shell">
-        <BraveSearchForm />
+        <DefaultSearchForm />
         <QuickLinks />
 
         <header className="newtab-workspace__header">

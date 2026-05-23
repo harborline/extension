@@ -113,7 +113,8 @@ describe("new tab workspace apps", () => {
       readFileSync(join(process.cwd(), "package.json"), "utf8"),
     );
 
-    expect(source).toContain("https://search.brave.com/search");
+    expect(source).toContain("chrome.search.query");
+    expect(packageJson.manifest.permissions).toContain("search");
     expect(source).toContain("chrome.tabs.query");
     expect(source).toContain("chrome.history.search");
     expect(source).toContain("maxResults: 0");
