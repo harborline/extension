@@ -322,6 +322,7 @@ body {
 
 .workspace-app-card {
   --workspace-app-accent: rgb(var(--primary));
+  position: relative;
   min-height: 132px;
   border: 1px solid rgb(var(--border));
   border-radius: 8px;
@@ -338,6 +339,48 @@ body {
     transform 160ms ease,
     opacity 160ms ease;
   cursor: grab;
+}
+
+.workspace-app-card__remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgb(var(--foreground) / 0.12);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(var(--muted-foreground));
+  background: rgb(var(--background) / 0.72);
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    opacity 120ms ease,
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.workspace-app-card__remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+.workspace-app-card:hover .workspace-app-card__remove,
+.workspace-app-card:focus-within .workspace-app-card__remove,
+.workspace-app-card__remove:focus-visible {
+  opacity: 1;
+}
+
+.workspace-app-card__remove:hover,
+.workspace-app-card__remove:focus-visible {
+  color: rgb(var(--destructive));
+  border-color: rgb(var(--destructive) / 0.55);
+  background: rgb(var(--destructive) / 0.14);
+  outline: none;
 }
 
 .workspace-app-card:active {

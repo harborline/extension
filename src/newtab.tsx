@@ -13,6 +13,17 @@ import {
   type WorkspaceAppIcon,
 } from "./newtab-apps";
 import { newTabDestinationForInput } from "./lib/newtab-navigation";
+import { getSettings } from "./storage";
+import {
+  createSidebarApiClient,
+  type LinkRow,
+  type SidebarApiClient,
+} from "./lib/sidebar-api";
+import {
+  NEWTAB_LINK_TAG,
+  workspaceLinkOrder,
+  workspaceLinkTags,
+} from "./lib/newtab-workspace-links";
 
 const TOP_APP_COUNT = 3;
 const FOCUS_APP_COUNT = 4;
@@ -415,10 +426,12 @@ function AppCard({
   app,
   size = "standard",
   drag,
+  onRemove,
 }: {
   app: WorkspaceApp;
   size?: "standard" | "small";
   drag: AppDrag;
+  onRemove: (app: WorkspaceApp) => void;
 }) {
   const classes = [
     "workspace-app-card",
@@ -451,6 +464,32 @@ function AppCard({
       }}
       style={{ "--workspace-app-accent": app.accent } as CSSProperties}
     >
+      <button
+        type="button"
+        className="workspace-app-card__remove"
+        aria-label={`Remove ${app.name}`}
+        title={`Remove ${app.name}`}
+        draggable={false}
+        onPointerDown={(event) => event.stopPropagation()}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          onRemove(app);
+        }}
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
       <a className="workspace-app-card__main" href={app.url}>
         <span className="workspace-app-card__mark" aria-hidden="true">
           <AppIcon name={app.icon} />
@@ -571,6 +610,9 @@ function BrowserPanel({
 
 const APP_ORDER_STORAGE_KEY = "newtab.appOrder";
 const CUSTOM_APPS_STORAGE_KEY = "newtab.customApps";
+const HIDDEN_APPS_STORAGE_KEY = "newtab.hiddenAppUrls";
+const SIDEBAR_LINK_LIMIT = 200;
+const DEFAULT_APP_URLS = new Set(WORKSPACE_APPS.map((app) => app.url));
 
 function reorderApps(
   apps: WorkspaceApp[],
@@ -601,6 +643,12 @@ function applyStoredOrder(
   return ordered;
 }
 
+function sanitizeUrlList(input: unknown): string[] {
+  return Array.isArray(input)
+    ? input.filter((url): url is string => typeof url === "string")
+    : [];
+}
+
 function sanitizeCustomApps(input: unknown): WorkspaceApp[] {
   if (!Array.isArray(input)) return [];
   return input.filter((entry): entry is WorkspaceApp => {
@@ -614,56 +662,196 @@ function sanitizeCustomApps(input: unknown): WorkspaceApp[] {
   });
 }
 
+function stripTransientAppFields(app: WorkspaceApp): WorkspaceApp {
+  const { remoteOrder: _remoteOrder, ...stored } = app;
+  return stored;
+}
+
+function remoteLinkToApp(row: LinkRow): WorkspaceApp {
+  return {
+    name: titleFor(row.title, row.url),
+    domain: hostnameFor(row.url),
+    url: row.url,
+    icon: "link",
+    accent: "#9ca3af",
+    remoteId: row.id,
+    remoteOrder: workspaceLinkOrder(row.tags),
+  };
+}
+
+function mergeRemoteWorkspaceApps(
+  localApps: WorkspaceApp[],
+  remoteApps: WorkspaceApp[],
+  hiddenUrls: string[],
+  preferRemoteOrder: boolean,
+): WorkspaceApp[] {
+  const hidden = new Set(hiddenUrls);
+  const byUrl = new Map(localApps.map((app) => [app.url, app]));
+
+  for (const remote of remoteApps) {
+    if (hidden.has(remote.url)) continue;
+    const existing = byUrl.get(remote.url);
+    if (existing) {
+      byUrl.set(remote.url, {
+        ...existing,
+        remoteId: remote.remoteId,
+        remoteOrder: remote.remoteOrder,
+      });
+    } else {
+      byUrl.set(remote.url, remote);
+    }
+  }
+
+  const merged = Array.from(byUrl.values());
+  if (!preferRemoteOrder) return merged;
+
+  return merged
+    .map((app, index) => ({ app, index }))
+    .sort((a, b) => {
+      const left = a.app.remoteOrder;
+      const right = b.app.remoteOrder;
+      if (left === right) return a.index - b.index;
+      if (left === null || left === undefined) return 1;
+      if (right === null || right === undefined) return -1;
+      return left - right;
+    })
+    .map(({ app }) => app);
+}
+
+async function sidebarClient(): Promise<SidebarApiClient | null> {
+  const settings = await getSettings();
+  if (!settings.sidebarSyncEnabled || !settings.sidebarApiUrl.trim()) {
+    return null;
+  }
+  return createSidebarApiClient(
+    settings.sidebarApiToken.trim(),
+    settings.sidebarApiUrl.trim(),
+  );
+}
+
 function NewTabWorkspace() {
   const { tabs, history, clearHistory } = useBrowserShortcuts();
   const [apps, setApps] = useState<WorkspaceApp[]>(() => WORKSPACE_APPS);
+  const [hiddenUrls, setHiddenUrls] = useState<string[]>([]);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
 
   useEffect(() => {
     let live = true;
-    try {
-      chrome.storage.local.get(
-        [APP_ORDER_STORAGE_KEY, CUSTOM_APPS_STORAGE_KEY],
-        (result) => {
-          if (!live) return;
-          const customs = sanitizeCustomApps(result?.[CUSTOM_APPS_STORAGE_KEY]);
-          const combined = [...WORKSPACE_APPS, ...customs];
-          const storedOrder = result?.[APP_ORDER_STORAGE_KEY];
-          if (Array.isArray(storedOrder) && storedOrder.length > 0) {
-            setApps(
-              applyStoredOrder(
-                combined,
-                storedOrder.filter(
-                  (url): url is string => typeof url === "string",
-                ),
-              ),
-            );
-          } else {
-            setApps(combined);
-          }
-        },
-      );
-    } catch {
-      /* chrome.storage may be unavailable in some preview contexts */
-    }
+    void (async () => {
+      try {
+        const result = await chrome.storage.local.get([
+          APP_ORDER_STORAGE_KEY,
+          CUSTOM_APPS_STORAGE_KEY,
+          HIDDEN_APPS_STORAGE_KEY,
+        ]);
+        if (!live) return;
+
+        const hidden = sanitizeUrlList(result?.[HIDDEN_APPS_STORAGE_KEY]);
+        const hiddenSet = new Set(hidden);
+        const customs = sanitizeCustomApps(
+          result?.[CUSTOM_APPS_STORAGE_KEY],
+        ).filter((app) => !hiddenSet.has(app.url));
+        const combined = [...WORKSPACE_APPS, ...customs].filter(
+          (app) => !hiddenSet.has(app.url),
+        );
+        const storedOrder = sanitizeUrlList(result?.[APP_ORDER_STORAGE_KEY]);
+        const localApps =
+          storedOrder.length > 0
+            ? applyStoredOrder(combined, storedOrder)
+            : combined;
+        setHiddenUrls(hidden);
+        setApps(localApps);
+
+        const client = await sidebarClient();
+        if (!client || !live) return;
+        const remote = await client.links.list({
+          tag: NEWTAB_LINK_TAG,
+          limit: SIDEBAR_LINK_LIMIT,
+        });
+        if (!live) return;
+        setApps(
+          mergeRemoteWorkspaceApps(
+            localApps,
+            remote.links.map(remoteLinkToApp),
+            hidden,
+            storedOrder.length === 0,
+          ),
+        );
+      } catch {
+        /* chrome.storage/sidebar-api may be unavailable in some preview contexts */
+      }
+    })();
     return () => {
       live = false;
     };
   }, []);
 
-  const persistOrder = (next: WorkspaceApp[]) => {
+  const persistWorkspace = (next: WorkspaceApp[], nextHidden = hiddenUrls) => {
     setApps(next);
+    setHiddenUrls(nextHidden);
+    void persistWorkspaceLocal(next, nextHidden);
+    void syncWorkspaceLinks(next);
+  };
+
+  const persistWorkspaceLocal = async (
+    next: WorkspaceApp[],
+    nextHidden = hiddenUrls,
+  ) => {
     try {
-      chrome.storage.local.set({
+      await chrome.storage.local.set({
+        [CUSTOM_APPS_STORAGE_KEY]: next
+          .filter((app) => !DEFAULT_APP_URLS.has(app.url))
+          .map(stripTransientAppFields),
         [APP_ORDER_STORAGE_KEY]: next.map((app) => app.url),
+        [HIDDEN_APPS_STORAGE_KEY]: nextHidden,
       });
     } catch {
       /* ignore */
     }
   };
 
-  const addCustomApp = () => {
+  const syncWorkspaceLinks = async (next: WorkspaceApp[]) => {
+    try {
+      const client = await sidebarClient();
+      if (!client) return;
+      await Promise.all(
+        next.map((app, index) =>
+          client.links.upsert({
+            id: app.remoteId,
+            url: app.url,
+            title: app.name,
+            description: app.domain,
+            tags: workspaceLinkTags(index),
+            favicon: null,
+            source: "newtab",
+          }),
+        ),
+      );
+    } catch {
+      /* local workspace state wins if sync is unavailable */
+    }
+  };
+
+  const deleteSidebarWorkspaceLink = async (app: WorkspaceApp) => {
+    try {
+      const client = await sidebarClient();
+      if (!client) return;
+      let id = app.remoteId;
+      if (!id) {
+        const remote = await client.links.list({
+          tag: NEWTAB_LINK_TAG,
+          limit: SIDEBAR_LINK_LIMIT,
+        });
+        id = remote.links.find((link) => link.url === app.url)?.id;
+      }
+      if (id) await client.links.delete(id);
+    } catch {
+      /* keep the local removal even when remote delete fails */
+    }
+  };
+
+  const addCustomApp = async () => {
     const nameInput = window.prompt("New link name");
     if (!nameInput?.trim()) return;
     const urlInput = window.prompt("URL (e.g. https://example.com)");
@@ -696,19 +884,16 @@ function NewTabWorkspace() {
     };
 
     const nextApps = [...apps, newApp];
-    setApps(nextApps);
+    const nextHidden = hiddenUrls.filter((url) => url !== normalized);
+    persistWorkspace(nextApps, nextHidden);
+  };
 
-    try {
-      chrome.storage.local.get(CUSTOM_APPS_STORAGE_KEY, (result) => {
-        const existing = sanitizeCustomApps(result?.[CUSTOM_APPS_STORAGE_KEY]);
-        chrome.storage.local.set({
-          [CUSTOM_APPS_STORAGE_KEY]: [...existing, newApp],
-          [APP_ORDER_STORAGE_KEY]: nextApps.map((app) => app.url),
-        });
-      });
-    } catch {
-      /* ignore */
-    }
+  const removeApp = (app: WorkspaceApp) => {
+    if (!window.confirm(`Remove ${app.name} from the new tab page?`)) return;
+    const nextApps = apps.filter((existing) => existing.url !== app.url);
+    const nextHidden = Array.from(new Set([...hiddenUrls, app.url]));
+    persistWorkspace(nextApps, nextHidden);
+    void deleteSidebarWorkspaceLink(app);
   };
 
   const appGroups = useMemo(() => {
@@ -724,7 +909,7 @@ function NewTabWorkspace() {
     setOverIndex(null);
     if (from === null) return;
     const next = reorderApps(apps, from, toIndex);
-    if (next) persistOrder(next);
+    if (next) persistWorkspace(next);
   };
 
   const makeDrag = (index: number): AppDrag => ({
@@ -760,7 +945,12 @@ function NewTabWorkspace() {
             aria-label="Primary apps"
           >
             {appGroups.top.map((app, i) => (
-              <AppCard key={app.url} app={app} drag={makeDrag(i)} />
+              <AppCard
+                key={app.url}
+                app={app}
+                drag={makeDrag(i)}
+                onRemove={removeApp}
+              />
             ))}
           </div>
           <div
@@ -772,6 +962,7 @@ function NewTabWorkspace() {
                 key={app.url}
                 app={app}
                 drag={makeDrag(TOP_APP_COUNT + i)}
+                onRemove={removeApp}
               />
             ))}
           </div>
@@ -785,6 +976,7 @@ function NewTabWorkspace() {
                 app={app}
                 size="small"
                 drag={makeDrag(TOP_APP_COUNT + FOCUS_APP_COUNT + i)}
+                onRemove={removeApp}
               />
             ))}
             <button

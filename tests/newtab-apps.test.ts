@@ -115,13 +115,35 @@ describe("new tab workspace apps", () => {
       { label: "Pull Requests", url: "https://github.com/pulls" },
       {
         label: "Repositories",
-        url: "https://github.com/aloewright?tab=repositories",
+        url: "https://github.com/repositories",
       },
       { label: "Feed", url: "https://github.com/dashboard-feed" },
     ]);
     expect(source).toContain("workspace-app-card__quick-links");
     expect(source).toContain("app.quickLinks.map");
     expect(styles).toContain(".workspace-app-card__quick-link");
+  });
+
+  it("lets users remove workspace links and persists hidden URLs", () => {
+    const source = readFileSync(join(process.cwd(), "src/newtab.tsx"), "utf8");
+    const styles = readFileSync(join(process.cwd(), "src/style.css"), "utf8");
+
+    expect(source).toContain("HIDDEN_APPS_STORAGE_KEY");
+    expect(source).toContain("workspace-app-card__remove");
+    expect(source).toContain("Remove ${app.name}");
+    expect(source).toContain("deleteSidebarWorkspaceLink");
+    expect(styles).toContain(".workspace-app-card__remove");
+  });
+
+  it("syncs new-tab workspace links through the sidebar-api with order tags", () => {
+    const source = readFileSync(join(process.cwd(), "src/newtab.tsx"), "utf8");
+
+    expect(source).toContain("client.links.list");
+    expect(source).toContain("client.links.upsert");
+    expect(source).toContain("client.links.delete");
+    expect(source).toContain("workspaceLinkTags(index)");
+    expect(source).toContain("workspaceLinkOrder(row.tags)");
+    expect(source).toContain('source: "newtab"');
   });
 
   it("keeps the new tab layout grouped for search, cards, tabs, and history", () => {

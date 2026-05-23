@@ -36,6 +36,7 @@ describe("sidebar-api client", () => {
     await client.health()
     const headers = new Headers(calls[0]!.init.headers)
     expect(headers.get("x-sidebar-token")).toBe("tok")
+    expect(calls[0]!.init.credentials).toBe("include")
   })
 
   it("conversations.upsert posts JSON with content-type set", async () => {
@@ -61,6 +62,23 @@ describe("sidebar-api client", () => {
     const body = JSON.parse(String(calls[0]!.init.body)) as { pulledAt: string }
     expect(typeof body.pulledAt).toBe("string")
     expect(body.pulledAt.length).toBeGreaterThan(0)
+  })
+
+  it("links.list and links.delete use the Worker links API", async () => {
+    const { calls } = mockFetch([
+      { body: { links: [{ id: "l1", url: "https://x", title: "x" }] } },
+      { status: 204, body: null }
+    ])
+    const client = createSidebarApiClient("tok", BASE)
+
+    await expect(client.links.list({ tag: "newtab", limit: 50 })).resolves.toEqual({
+      links: [{ id: "l1", url: "https://x", title: "x" }]
+    })
+    await expect(client.links.delete("l1")).resolves.toBeUndefined()
+
+    expect(calls[0]!.url).toBe(`${BASE}/api/links?tag=newtab&limit=50`)
+    expect(calls[1]!.url).toBe(`${BASE}/api/links/l1`)
+    expect(calls[1]!.init.method).toBe("DELETE")
   })
 
   it("recordings.upload sends multipart/form-data with metadata + file", async () => {

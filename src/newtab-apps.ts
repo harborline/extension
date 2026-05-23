@@ -5,6 +5,8 @@ export interface WorkspaceApp {
   icon: WorkspaceAppIcon;
   accent: string;
   quickLinks?: WorkspaceAppQuickLink[];
+  remoteId?: string;
+  remoteOrder?: number | null;
 }
 
 export interface WorkspaceAppQuickLink {
@@ -59,7 +61,7 @@ export const WORKSPACE_APPS: WorkspaceApp[] = [
       { label: "Pull Requests", url: "https://github.com/pulls" },
       {
         label: "Repositories",
-        url: "https://github.com/aloewright?tab=repositories",
+        url: "https://github.com/repositories",
       },
       { label: "Feed", url: "https://github.com/dashboard-feed" },
     ],

@@ -36,6 +36,19 @@ export interface LinkUpsertPayload {
   source?: string
 }
 
+export interface LinkRow {
+  id: string
+  url: string
+  title: string
+  description: string | null
+  tags: string
+  favicon: string | null
+  source: string
+  chunk_count: number
+  created_at: number
+  updated_at: number
+}
+
 export interface BookmarkPayload {
   id: string
   url: string
@@ -72,6 +85,8 @@ export interface SidebarApiClient {
   }
   links: {
     upsert: (payload: LinkUpsertPayload) => Promise<{ id: string; created: boolean; chunkCount: number }>
+    list: (opts?: { tag?: string; limit?: number }) => Promise<{ links: LinkRow[] }>
+    delete: (id: string) => Promise<void>
   }
   bookmarks: {
     snapshot: (
@@ -96,13 +111,18 @@ export function createSidebarApiClient(token: string, baseUrl: string): SidebarA
     if (init.body && typeof init.body === "string" && !headers.has("content-type")) {
       headers.set("content-type", "application/json")
     }
-    const res = await fetch(`${cleanBase}${path}`, { ...init, headers })
+    const res = await fetch(`${cleanBase}${path}`, {
+      ...init,
+      headers,
+      credentials: "include"
+    })
     if (!res.ok) {
       const body = (await res.json().catch(() => null)) as { error?: { code?: string; message?: string } } | null
       const code = body?.error?.code ?? "http_error"
       const message = body?.error?.message ?? `request failed: ${res.status}`
       throw new ApiError(res.status, code, message)
     }
+    if (res.status === 204) return undefined as T
     return (await res.json()) as T
   }
 
@@ -119,7 +139,17 @@ export function createSidebarApiClient(token: string, baseUrl: string): SidebarA
     },
     links: {
       upsert: (payload) =>
-        jsonRequest("/api/links", { method: "POST", body: JSON.stringify(payload) })
+        jsonRequest("/api/links", { method: "POST", body: JSON.stringify(payload) }),
+      list: (opts = {}) => {
+        const params = new URLSearchParams()
+        if (opts.tag) params.set("tag", opts.tag)
+        if (opts.limit) params.set("limit", String(opts.limit))
+        const suffix = params.toString() ? `?${params.toString()}` : ""
+        return jsonRequest(`/api/links${suffix}`)
+      },
+      delete: async (id) => {
+        await jsonRequest(`/api/links/${encodeURIComponent(id)}`, { method: "DELETE" })
+      }
     },
     bookmarks: {
       snapshot: (bookmarks, pulledAt = new Date().toISOString()) =>
@@ -135,7 +165,12 @@ export function createSidebarApiClient(token: string, baseUrl: string): SidebarA
         form.set("file", blob, metadata.filename)
         const headers = new Headers()
         if (token) headers.set("x-sidebar-token", token)
-        const res = await fetch(`${cleanBase}/api/recordings`, { method: "POST", body: form, headers })
+        const res = await fetch(`${cleanBase}/api/recordings`, {
+          method: "POST",
+          body: form,
+          headers,
+          credentials: "include"
+        })
         if (!res.ok) {
           const body = (await res.json().catch(() => null)) as { error?: { code?: string; message?: string } } | null
           throw new ApiError(res.status, body?.error?.code ?? "http_error", body?.error?.message ?? `upload failed: ${res.status}`)
