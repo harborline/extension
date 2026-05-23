@@ -1,5 +1,5 @@
 /**
- * MCP server for Brave Dev Extension — HTTP + SSE on 127.0.0.1.
+ * MCP server for AI Dev Sidebar — HTTP + SSE on 127.0.0.1.
  *
  * Implements the MCP "HTTP+SSE" transport: clients open GET /sse to receive
  * server-to-client messages, and POST /messages?sessionId=… to send their
@@ -322,7 +322,7 @@ export class MCPServer {
             id,
             result: {
               protocolVersion: params?.protocolVersion || "2024-11-05",
-              serverInfo: { name: "brave-extension", version: "0.1.0" },
+              serverInfo: { name: "ai-dev-sidebar", version: "0.1.0" },
               capabilities: {
                 tools: { listChanged: true },
                 resources: { listChanged: true, subscribe: false }

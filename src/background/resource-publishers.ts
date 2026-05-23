@@ -89,7 +89,7 @@ async function publishLinks(upsert: ResourceUpsert): Promise<void> {
     const list = Array.isArray(r?.[LX_LINKS_KEY]) ? r[LX_LINKS_KEY] : []
     upsert(LINKS_URI, {
       name: "Library links",
-      description: "Collected links from the Brave Dev Extension library.",
+      description: "Collected links from the AI Dev Sidebar library.",
       mimeType: "application/json",
       payload: list
     })

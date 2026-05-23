@@ -83,23 +83,23 @@ describe("DopplerClient", () => {
 
   it("recognizes CLI tokens scoped outside the native host cwd", async () => {
     const runCommand = vi.fn(async (_cmd: string, args: string[]) => {
-      if (args.join(" ") === "configure get token --plain --scope /Users/aloe/Development/ai-dev-sidebar") {
+      if (args.join(" ") === "configure get token --plain --scope /Users/example/Projects/ai-dev-sidebar") {
         return { code: 1, stdout: "", stderr: "token not found" }
       }
-      if (args.join(" ") === "configure get token --plain --scope /Users/aloe") {
+      if (args.join(" ") === "configure get token --plain --scope /Users/example") {
         return { code: 0, stdout: "dp.ct.scoped-token\n", stderr: "" }
       }
       return { code: 1, stdout: "", stderr: "unexpected" }
     })
     const fetchImpl = vi.fn(async () => jsonResponse({ workplace: { name: "Aloes" } }))
     const client = new DopplerClient({ runCommand, fetchImpl, home: tmpHome() })
-    client.setDefaults({ scope: "/Users/aloe" })
+    client.setDefaults({ scope: "/Users/example" })
 
     const status = await client.status()
 
     expect(status.tokenSet).toBe(true)
     expect(status.tokenSource).toBe("cli")
-    expect(status.tokenScope).toBe("/Users/aloe")
+    expect(status.tokenScope).toBe("/Users/example")
     expect(JSON.stringify(status)).not.toContain("scoped-token")
   })
 
@@ -112,7 +112,7 @@ describe("DopplerClient", () => {
         return {
           code: 0,
           stdout: JSON.stringify({
-            "/Users/aloe": { token: "dp.ct.all-config-token" }
+            "/Users/example": { token: "dp.ct.all-config-token" }
           }),
           stderr: ""
         }
@@ -125,7 +125,7 @@ describe("DopplerClient", () => {
     const status = await client.status()
 
     expect(status.tokenSet).toBe(true)
-    expect(status.tokenScope).toBe("/Users/aloe")
+    expect(status.tokenScope).toBe("/Users/example")
     expect(JSON.stringify(status)).not.toContain("all-config-token")
   })
 

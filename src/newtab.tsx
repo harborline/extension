@@ -306,7 +306,7 @@ function BraveSearchForm() {
 const QUICK_LINKS: { label: string; url: string; icon: ReactNode }[] = [
   {
     label: "Chat",
-    url: "https://alex.chat",
+    url: "https://chatgpt.com",
     icon: (
       <>
         <path d="M5 18.5V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H9z" />
@@ -316,7 +316,7 @@ const QUICK_LINKS: { label: string; url: string; icon: ReactNode }[] = [
   },
   {
     label: "Email",
-    url: "https://mail.fly.pm",
+    url: "https://mail.google.com",
     icon: (
       <>
         <rect x="4" y="6" width="16" height="12" rx="2" />
@@ -326,7 +326,7 @@ const QUICK_LINKS: { label: string; url: string; icon: ReactNode }[] = [
   },
   {
     label: "Calendar",
-    url: "https://cal.fly.pm",
+    url: "https://calendar.google.com",
     icon: (
       <>
         <rect x="4" y="5" width="16" height="15" rx="2" />
@@ -336,7 +336,7 @@ const QUICK_LINKS: { label: string; url: string; icon: ReactNode }[] = [
   },
   {
     label: "Tasks",
-    url: "https://alex.coffee",
+    url: "https://github.com/issues",
     icon: (
       <>
         <path d="M5 6h2M5 12h2M5 18h2" />
@@ -349,7 +349,7 @@ const QUICK_LINKS: { label: string; url: string; icon: ReactNode }[] = [
   },
   {
     label: "Link Shortener",
-    url: "https://fly.pm",
+    url: "https://bitly.com",
     icon: (
       <>
         <path d="M9.5 14.5 14.5 9.5" />

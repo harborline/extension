@@ -67,6 +67,7 @@ export function SidebarRail({ active, onChange }: Props) {
               title={s.label}
               aria-label={s.label}
               aria-pressed={isActive}
+              data-onboarding-tour-id={`rail-${s.id}`}
               className={`p-2 rounded transition-colors ${
                 isActive
                   ? "bg-accent text-fg"
@@ -82,6 +83,7 @@ export function SidebarRail({ active, onChange }: Props) {
       <div
         className="flex flex-col items-center gap-1 pt-2 border-t border-border/50 w-full"
         data-testid="sidebar-rail-quick-actions"
+        data-onboarding-tour-id="rail-quick-actions"
       >
         {QUICK_ACTIONS.map((def) => (
           <button

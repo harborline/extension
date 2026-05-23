@@ -17,7 +17,7 @@ function mockFetch(responses: MockResp[]): { calls: { url: string; init: Request
   return { calls }
 }
 
-const BASE = "https://sidebar.pdx.software"
+const BASE = "https://sidebar.example.test"
 
 describe("sidebar-api client", () => {
   beforeEach(() => vi.restoreAllMocks())

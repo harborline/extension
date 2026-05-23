@@ -14,9 +14,9 @@ describe("company-name labels", () => {
   })
 
   it("uses the registrable domain for fallback company names", () => {
-    expect(registrableDomain("dev.aloewright.com")).toBe("aloewright.com")
-    expect(companyNameForDomain("dev.aloewright.com")).toBe("Aloewright")
-    expect(companyNameForDomain("book-cook.com")).toBe("Book Cook")
+    expect(registrableDomain("docs.example-studio.com")).toBe("example-studio.com")
+    expect(companyNameForDomain("docs.example-studio.com")).toBe("Example Studio")
+    expect(companyNameForDomain("dev-toolkit.com")).toBe("Dev Toolkit")
   })
 
   it("uses known company overrides for tracker domains", () => {

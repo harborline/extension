@@ -39,11 +39,12 @@ describe("getSettings / setSettings", () => {
     expect(s.autoScrape).toBe(false)
     expect(s.captureConsole).toBe(true)
     expect(s.captureNetwork).toBe(false)
-    // Cloudos defaults still present until users explicitly clear them.
+    // Legacy sync keys remain readable for migration but do not ship a
+    // personal backend URL by default.
     expect(s.cloudosSyncEnabled).toBe(false)
     // New sidebar defaults from Phase 5.
     expect(s.sidebarSyncEnabled).toBe(false)
-    expect(s.sidebarApiUrl).toBe("https://sidebar.pdx.software")
+    expect(s.sidebarApiUrl).toBe("")
     expect(s.sidebarApiToken).toBe("")
     expect(s.sidebarPruneAfterSync).toBe(false)
     expect(s.dopplerProject).toBe("")

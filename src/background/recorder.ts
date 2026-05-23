@@ -183,7 +183,7 @@ export function updateRecorderAction() {
     } else {
       stopActionTicker();
       chrome.action.setBadgeText({ text: "" });
-      chrome.action.setTitle({ title: "Brave Dev Extension" });
+      chrome.action.setTitle({ title: "AI Dev Sidebar" });
       chrome.action?.setPopup?.({ popup: "" });
     }
   } catch {

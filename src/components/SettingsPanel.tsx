@@ -12,6 +12,7 @@ export function SettingsPanel({
   settings,
   onUpdate,
   onClose,
+  onStartOnboarding,
   nativeHost,
   mcpServers,
   sidebarSync,
@@ -21,6 +22,7 @@ export function SettingsPanel({
   settings: Settings
   onUpdate: (partial: Partial<Settings>) => void
   onClose: () => void
+  onStartOnboarding?: () => void
   nativeHost: {
     connected: boolean
     getMCPServers: (path?: string) => void
@@ -59,6 +61,16 @@ export function SettingsPanel({
     <div className="flex flex-col h-full bg-bg-alt">
       <div className="px-3 py-2 border-b border-border flex items-center">
         <span className="text-xs font-medium text-fg/80 flex-1">Settings</span>
+        {onStartOnboarding && (
+          <button
+            type="button"
+            onClick={onStartOnboarding}
+            data-onboarding-tour-id="settings-replay-tour"
+            className="text-[10px] text-primary hover:text-primary/80 mr-2"
+          >
+            Replay tour
+          </button>
+        )}
         <button onClick={onClose} className="text-fg/40 hover:text-fg text-xs">✕</button>
       </div>
 
@@ -229,7 +241,7 @@ export function SettingsPanel({
         {mcp && (
           <div>
             <label className="text-[11px] text-fg/50 uppercase tracking-wider mb-2 block">
-              Brave Extension MCP server
+              AI Dev Sidebar MCP server
             </label>
             <div className="bg-card/20 rounded p-2 space-y-2">
               <StatusRow
@@ -432,7 +444,7 @@ export function SettingsPanel({
                   value={settings.sidebarApiUrl}
                   onChange={(e) => onUpdate({ sidebarApiUrl: e.target.value })}
                   className="w-full text-[10px] py-1 px-2 rounded bg-input border border-border text-fg font-mono outline-none"
-                  placeholder="https://sidebar.pdx.software"
+                  placeholder="https://your-sidebar-api.example.com"
                 />
                 <input
                   type="password"
@@ -468,8 +480,8 @@ export function SettingsPanel({
             )}
             {settings.cloudosSyncEnabled && !settings.sidebarSyncEnabled && (
               <div className="text-[9px] text-fg/40 pt-1">
-                Legacy CloudOS sync is still on. Migrate by toggling "Sync conversations to sidebar-api"
-                above; the CloudOS settings will be removed in a follow-up release.
+                Legacy sync is still on. Migrate by toggling "Sync conversations to sidebar-api"
+                above; the legacy settings will be removed in a follow-up release.
               </div>
             )}
           </div>

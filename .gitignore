@@ -6,6 +6,7 @@ tsconfig.tsbuildinfo
 .omx/
 test-results/
 coverage/
+native-host/ai-dev-host.sh
 # Build outputs (Worker SPA in worker/dist/web/, future bundles).
 dist/
 # Local-only state from agent tooling and wrangler dev runs.

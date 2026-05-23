@@ -1,13 +1,13 @@
 {
-  "name": "brave-extension",
-  "displayName": "Brave Dev Extension",
+  "name": "ai-dev-sidebar",
+  "displayName": "AI Dev Sidebar",
   "version": "0.1.0",
-  "description": "Brave sidebar extension connected to local CLI tools — Claude Code, Gemini, Copilot, Codex — with page inspection and scraping.",
-  "author": "aloe",
+  "description": "Chrome side panel for local AI terminals, page inspection, captures, bookmarks, cookies, and browser workflow tools.",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
     "package": "plasmo package",
+    "package:store": "pnpm build && node scripts/prepare-chrome-store.mjs",
     "install-host": "node scripts/install-native-host.mjs",
     "uninstall-host": "node scripts/uninstall-native-host.mjs",
     "diagnose-host": "node scripts/diagnose-native-host.mjs",
@@ -20,7 +20,11 @@
   },
   "dependencies": {
     "@chenglou/pretext": "^0.0.7",
+    "@gfazioli/mantine-onboarding-tour": "^4.0.2",
+    "@mantine/core": "^8.3.18",
+    "@mantine/hooks": "^8.3.18",
     "@plasmohq/storage": "^1.15.0",
+    "@tabler/icons-react": "^3.44.0",
     "@tanstack/react-virtual": "^3.13.25",
     "fflate": "^0.8.3",
     "react": "^18.3.1",
@@ -69,7 +73,6 @@
       "activeTab",
       "sidePanel",
       "nativeMessaging",
-      "debugger",
       "scripting",
       "contextMenus",
       "tabCapture",
@@ -81,7 +84,6 @@
       "history",
       "cookies",
       "downloads",
-      "tabGroups",
       "browsingData",
       "webNavigation",
       "declarativeNetRequest",
@@ -102,7 +104,7 @@
         "suggested_key": {
           "default": "Alt+Shift+A"
         },
-        "description": "Toggle Brave Dev Extension"
+        "description": "Toggle AI Dev Sidebar"
       }
     }
   }

@@ -115,7 +115,7 @@ if (!extensionId) {
 
 const manifest = {
   name: HOST_NAME,
-  description: "Brave Dev Extension native messaging host — bridges browser to local CLI tools",
+  description: "AI Dev Sidebar native messaging host — bridges browser to local CLI tools",
   path: hostPath,
   type: "stdio",
   allowed_origins: [`chrome-extension://${extensionId}/`]

@@ -29,7 +29,7 @@ describe("MCPServer dispatch", () => {
       params: { protocolVersion: "2024-11-05" }
     })
     expect(reply.id).toBe(1)
-    expect(reply.result.serverInfo.name).toBe("brave-extension")
+    expect(reply.result.serverInfo.name).toBe("ai-dev-sidebar")
     expect(reply.result.capabilities.tools.listChanged).toBe(true)
     expect(reply.result.capabilities.resources.listChanged).toBe(true)
   })

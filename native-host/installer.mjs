@@ -1,5 +1,5 @@
 /**
- * Shared install/uninstall helpers for the Brave Dev Extension native host.
+ * Shared install/uninstall helpers for the AI Dev Sidebar native host.
  *
  * Pure functions (mergeMcpEntry, removeMcpEntry, addRcBlock, removeRcBlock,
  * buildClaudeEntry, buildWrapperScript) have no side effects and are unit

@@ -27,29 +27,37 @@ describe("new tab workspace apps", () => {
       {
         name: "Linear",
         domain: "linear.app",
-        url: "https://linear.app/aloey",
+        url: "https://linear.app",
       },
       {
-        name: "Blog Editor",
-        domain: "dev.aloewright.com",
-        url: "https://dev.aloewright.com",
-      },
-      { name: "Blog", domain: "aloewright.com", url: "https://aloewright.com" },
-      {
-        name: "Book Editor",
-        domain: "book-cook.com",
-        url: "https://book-cook.com",
+        name: "VS Code Web",
+        domain: "vscode.dev",
+        url: "https://vscode.dev",
       },
       {
-        name: "Design System Generator",
-        domain: "so.makethe.app",
-        url: "https://so.makethe.app",
+        name: "MDN Web Docs",
+        domain: "developer.mozilla.org",
+        url: "https://developer.mozilla.org",
       },
-      { name: "Directory", domain: "makethe.app", url: "https://makethe.app" },
       {
-        name: "Video Manager",
-        domain: "spooool.com",
-        url: "https://spooool.com",
+        name: "Notion",
+        domain: "notion.so",
+        url: "https://notion.so",
+      },
+      {
+        name: "Figma",
+        domain: "figma.com",
+        url: "https://figma.com",
+      },
+      {
+        name: "Chrome Web Store",
+        domain: "chromewebstore.google.com",
+        url: "https://chromewebstore.google.com",
+      },
+      {
+        name: "YouTube Studio",
+        domain: "studio.youtube.com",
+        url: "https://studio.youtube.com",
       },
     ]);
   });

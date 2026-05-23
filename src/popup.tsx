@@ -149,7 +149,7 @@ function Popup() {
           Allow {thirdPartyCookiePrompt.embeddedName} cookies while using {thirdPartyCookiePrompt.siteName}?
         </h1>
         <p className="text-sm text-fg/60 mt-3 leading-relaxed">
-          Brave Dev Extension blocks embedded third-party cookie access by default. Allowing this lets {thirdPartyCookiePrompt.embeddedName}
+          AI Dev Sidebar blocks embedded third-party cookie access by default. Allowing this lets {thirdPartyCookiePrompt.embeddedName}
           receive and set its cookies when it is embedded on {thirdPartyCookiePrompt.siteName}.
         </p>
         <p className="text-xs text-fg/45 mt-3 leading-relaxed">
@@ -227,7 +227,7 @@ function Popup() {
   // Idle view (with most recent upload, if any)
   return (
     <div className="w-[240px] bg-bg text-fg p-4 text-center">
-      <div className="text-sm font-medium mb-2">Brave Dev Extension</div>
+      <div className="text-sm font-medium mb-2">AI Dev Sidebar</div>
       <div className="text-[11px] text-fg/50 mb-3">
         Open the sidebar to chat with your local AI CLI tools
       </div>

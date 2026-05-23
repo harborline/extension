@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Native Messaging Host for Brave Dev Extension
+ * Native Messaging Host for AI Dev Sidebar
  * Bridges the browser extension to local CLI tools (claude, gemini, copilot, codex).
  *
  * Persistent context is achieved per-backend using each CLI's native session continuation:

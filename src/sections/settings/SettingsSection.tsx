@@ -7,7 +7,7 @@ import type { DopplerStatus, MCPServer, MCPStatus } from "../../types"
 
 const SIDEBAR_API_SECRET_NAMES = ["SIDEBAR_API_URL", "SIDEBAR_API_TOKEN", "SIDEBAR_TOKEN"]
 
-export function SettingsSection() {
+export function SettingsSection({ onStartOnboarding }: { onStartOnboarding?: () => void }) {
   const { settings, update } = useSettings()
   const [mcpServers, setMcpServers] = useState<MCPServer[]>([])
   const [mcpStatus, setMcpStatus] = useState<MCPStatus | null>(null)
@@ -34,7 +34,7 @@ export function SettingsSection() {
           showToast("Token rotated; reconnect any external `claude` sessions.")
           break
         case "mcp.register":
-          showToast("Registered Brave Extension MCP server in ~/.claude.json.")
+          showToast("Registered AI Dev Sidebar MCP server in ~/.claude.json.")
           break
         case "mcp.unregister":
           showToast("Unregistered from ~/.claude.json.")
@@ -60,8 +60,8 @@ export function SettingsSection() {
           if (!msg.silent) {
             showToast(
               msg.codeCopiedToClipboard
-                ? "Doppler opened. Paste the clipboard code into Brave if prompted."
-                : "Doppler opened in Brave."
+                ? "Doppler opened. Paste the clipboard code into the browser if prompted."
+                : "Doppler opened in your browser."
             )
           }
           break
@@ -155,6 +155,7 @@ export function SettingsSection() {
       settings={settings}
       onUpdate={update}
       onClose={() => {}}
+      onStartOnboarding={onStartOnboarding}
       nativeHost={nativeHost}
       mcpServers={mcpServers}
       sidebarSync={sidebarSync}

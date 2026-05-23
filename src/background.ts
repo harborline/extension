@@ -767,12 +767,12 @@ chrome.runtime.onInstalled.addListener(() => {
   try {
     chrome.contextMenus.create({
       id: "scrape-page",
-      title: "Scrape page to Brave Dev Extension",
+      title: "Scrape page to AI Dev Sidebar",
       contexts: ["page"],
     });
     chrome.contextMenus.create({
       id: "send-selection",
-      title: "Send selection to Brave Dev",
+      title: "Send selection to AI Dev Sidebar",
       contexts: ["selection"],
     });
     chrome.contextMenus.create({

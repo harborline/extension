@@ -1,5 +1,5 @@
 /**
- * PTYManager — owns spawned PTY shells for the Brave Dev Extension terminal.
+ * PTYManager — owns spawned PTY shells for the AI Dev Sidebar terminal.
  *
  * Wire protocol (over native messaging):
  *   in:  { type: "pty.spawn",  sessionId, cwd?, cols?, rows?, env? }

@@ -17,7 +17,7 @@ describe("uploadRecording", () => {
   it("posts multipart to /api/recordings when configured", async () => {
     await setSettings({
       sidebarSyncEnabled: true,
-      sidebarApiUrl: "https://sidebar.pdx.software",
+      sidebarApiUrl: "https://sidebar.example.test",
       sidebarApiToken: "tok"
     })
     vi.stubGlobal("fetch", vi.fn(async () =>
@@ -35,7 +35,7 @@ describe("uploadRecording", () => {
   it("returns a reason when the upload errors out", async () => {
     await setSettings({
       sidebarSyncEnabled: true,
-      sidebarApiUrl: "https://sidebar.pdx.software",
+      sidebarApiUrl: "https://sidebar.example.test",
       sidebarApiToken: "tok"
     })
     vi.stubGlobal("fetch", vi.fn(async () =>
@@ -64,7 +64,7 @@ describe("syncLink", () => {
   it("posts JSON to /api/links when configured", async () => {
     await setSettings({
       sidebarSyncEnabled: true,
-      sidebarApiUrl: "https://sidebar.pdx.software",
+      sidebarApiUrl: "https://sidebar.example.test",
       sidebarApiToken: "tok"
     })
     vi.stubGlobal("fetch", vi.fn(async () =>

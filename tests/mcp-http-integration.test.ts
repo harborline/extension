@@ -230,7 +230,7 @@ describe("MCP HTTP+SSE integration", () => {
       expect(initAck.status).toBe(202)
 
       const initReply = await sse.waitFor((m) => m.id === 1)
-      expect(initReply.result.serverInfo.name).toBe("brave-extension")
+      expect(initReply.result.serverInfo.name).toBe("ai-dev-sidebar")
 
       // 3. tools/list
       await ssePost(server.port, sse.endpoint, server.token, {

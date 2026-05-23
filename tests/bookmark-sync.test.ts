@@ -72,7 +72,7 @@ describe("pushSnapshot", () => {
     ])
     await setSettings({
       sidebarSyncEnabled: true,
-      sidebarApiUrl: "https://sidebar.pdx.software",
+      sidebarApiUrl: "https://sidebar.example.test",
       sidebarApiToken: "tok"
     })
 
@@ -90,7 +90,7 @@ describe("pushSnapshot", () => {
     const call = fetchMock.mock.calls[0] as unknown as [URL | RequestInfo, RequestInit]
     const url = call[0]
     const init = call[1]
-    expect(String(url)).toBe("https://sidebar.pdx.software/api/bookmarks/snapshot")
+    expect(String(url)).toBe("https://sidebar.example.test/api/bookmarks/snapshot")
     const body = JSON.parse(String(init.body)) as { bookmarks: { id: string; isFavorite?: boolean }[] }
     expect(body.bookmarks).toHaveLength(1)
     expect(body.bookmarks[0]!.id).toBe("b1")
@@ -101,7 +101,7 @@ describe("pushSnapshot", () => {
     installChromeBookmarks([])
     await setSettings({
       sidebarSyncEnabled: true,
-      sidebarApiUrl: "https://sidebar.pdx.software",
+      sidebarApiUrl: "https://sidebar.example.test",
       sidebarApiToken: "tok"
     })
     vi.stubGlobal("fetch", vi.fn(async () =>
