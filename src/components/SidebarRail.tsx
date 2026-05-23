@@ -1,3 +1,4 @@
+import { OnboardingTour } from "@gfazioli/mantine-onboarding-tour"
 import type { SectionId } from "../sections/types"
 import { SECTIONS } from "../sections/types"
 import { LeoIcon, type LeoIconName } from "./leo"
@@ -60,45 +61,49 @@ export function SidebarRail({ active, onChange }: Props) {
       <div className="flex flex-col items-center gap-1" data-testid="sidebar-rail-sections">
         {SECTIONS.map((s) => {
           const isActive = s.id === active
+          const tourId = `rail-${s.id}`
           return (
-            <button
-              key={s.id}
-              onClick={() => onChange(s.id)}
-              title={s.label}
-              aria-label={s.label}
-              aria-pressed={isActive}
-              data-onboarding-tour-id={`rail-${s.id}`}
-              className={`p-2 rounded transition-colors ${
-                isActive
-                  ? "bg-accent text-fg"
-                  : "text-fg/40 hover:bg-accent/50 hover:text-fg"
-              }`}
-            >
-              <LeoIcon name={ICONS[s.id]} size={16} />
-            </button>
+            <OnboardingTour.Target key={s.id} id={tourId}>
+              <button
+                onClick={() => onChange(s.id)}
+                title={s.label}
+                aria-label={s.label}
+                aria-pressed={isActive}
+                data-onboarding-tour-id={tourId}
+                className={`p-2 rounded transition-colors ${
+                  isActive
+                    ? "bg-accent text-fg"
+                    : "text-fg/40 hover:bg-accent/50 hover:text-fg"
+                }`}
+              >
+                <LeoIcon name={ICONS[s.id]} size={16} />
+              </button>
+            </OnboardingTour.Target>
           )
         })}
       </div>
 
-      <div
-        className="flex flex-col items-center gap-1 pt-2 border-t border-border/50 w-full"
-        data-testid="sidebar-rail-quick-actions"
-        data-onboarding-tour-id="rail-quick-actions"
-      >
-        {QUICK_ACTIONS.map((def) => (
-          <button
-            key={def.label}
-            type="button"
-            onClick={() => handleQuickAction(def)}
-            title={def.label}
-            aria-label={def.label}
-            className={`p-2 rounded transition-colors hover:bg-[${NORD_BLUE}]/15`}
-            style={{ color: NORD_BLUE }}
-          >
-            <LeoIcon name={def.icon} size={16} />
-          </button>
-        ))}
-      </div>
+      <OnboardingTour.Target id="rail-quick-actions">
+        <div
+          className="flex flex-col items-center gap-1 pt-2 border-t border-border/50 w-full"
+          data-testid="sidebar-rail-quick-actions"
+          data-onboarding-tour-id="rail-quick-actions"
+        >
+          {QUICK_ACTIONS.map((def) => (
+            <button
+              key={def.label}
+              type="button"
+              onClick={() => handleQuickAction(def)}
+              title={def.label}
+              aria-label={def.label}
+              className={`p-2 rounded transition-colors hover:bg-[${NORD_BLUE}]/15`}
+              style={{ color: NORD_BLUE }}
+            >
+              <LeoIcon name={def.icon} size={16} />
+            </button>
+          ))}
+        </div>
+      </OnboardingTour.Target>
     </nav>
   )
 }

@@ -138,6 +138,20 @@ export function SidebarOnboarding({
       <OnboardingTour
         tour={tour}
         started={hydrated && started}
+        focusRevealProps={{
+          focusedZIndex: 9001,
+          overlayProps: {
+            backgroundOpacity: 0.5,
+            blur: 1,
+            zIndex: 9000,
+          },
+          popoverProps: {
+            middlewares: { shift: { padding: 10 }, flip: true },
+            withinPortal: true,
+            width: 320,
+            zIndex: 9002,
+          },
+        }}
         onOnboardingTourChange={(step) => {
           if (isSectionId(step.section)) onNavigate(step.section);
         }}

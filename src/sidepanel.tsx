@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import "@mantine/core/styles.layer.css";
-import "@gfazioli/mantine-onboarding-tour/styles.layer.css";
+import "@mantine/core/styles.css";
+import "@gfazioli/mantine-onboarding-tour/styles.css";
 import "./style.css";
 import { SidebarRail } from "./components/SidebarRail";
 import { SidebarOnboarding } from "./components/SidebarOnboarding";
