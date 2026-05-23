@@ -112,6 +112,7 @@ be rearranged by drag-and-drop and is persisted in
 pnpm install
 pnpm dev            # starts plasmo dev (loads as unpacked extension from build/)
 pnpm build          # production build
+pnpm package:store  # build, clone/prune, audit, and zip Chrome Web Store bundle
 pnpm install-host   # install the native messaging host
 pnpm diagnose-host  # print signing/quarantine state of native artifacts
 pnpm typecheck      # tsc --noEmit -p .
