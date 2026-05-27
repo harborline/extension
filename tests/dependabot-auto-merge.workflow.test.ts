@@ -20,7 +20,7 @@ describe("dependabot auto-merge workflow", () => {
   })
 
   it("uses dependabot/fetch-metadata to classify the update", () => {
-    expect(workflow).toMatch(/uses:\s*dependabot\/fetch-metadata@v2/)
+    expect(workflow).toMatch(/uses:\s*dependabot\/fetch-metadata@v3/)
   })
 
   it("auto-merges the dev-deps-minor-patch group and minor/patch updates", () => {
